@@ -1,6 +1,8 @@
 <h2>C# Powerful Rat </h2>
 <li> This is a powerful Remote-Acces-Trojan made by me in c#. It features a wide variety of different built in commands and a built-in networking protocol.
 
+<h2>E-mail: mihai.ungureanu.talk@gmail.com</h2>
+
 <h2>Commands🧰</h2>
 
 ```text
@@ -51,3 +53,4 @@ Built in admin feature. If admin is turned off/on, the response will be automati
 8. UserInfo - Get information such as: Machine name, User name, Os version, Processor count, System directory, Domain name, Current working directory, Framework description, Os description
 
 Made entirely by tfwcodes/Mihai Ungureanu
+'''
