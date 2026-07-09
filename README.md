@@ -16,13 +16,6 @@ Built in admin feature. If admin is turned off/on, the response will be automati
 2. FileHandler:
          > 0. FileLooker - Searches trough all the files in the target's computer from a given path and extension to look.
             Example:
-              [rat@command] enter an index: 2
-              FileLooker - 0
-              FileStealer - 1
-              FileSender - 2
-              FileRemover - 3
-              FileEncrypter - 4
-              FileExecuter - 5
               [~] enter an index for the file handler: 0
               [~] enter the path to look into: C:\
               [~] enter the extension for the files: .txt
