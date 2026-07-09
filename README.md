@@ -19,7 +19,7 @@ Built in admin feature. If admin is turned off/on, the response will be automati
               [~] enter an index for the file handler: 0
               [~] enter the path to look into: C:\
               [~] enter the extension for the files: .txt
-              file saved as C:\Users\Mihai\info471096619.txt
+              file saved as C:\Users\{YourWindowsUsername}\info471096619.txt
          > 1. FileStealer - Steals a file knowing it's path.
          > 2. FileSender - Send a file to the target.
          > 3. FileRemover - Remove a file from the target's computer.
