@@ -1,3 +1,6 @@
+Acesta este un protocol de retea securizat care foloseste encriptie asimetrica cu un key-agreement protocol numit Elliptic-curve Diffie–Hellman (ECDH), care permite la client si server, fiecare avand o pereche de chei publice si private ca sa creeze un shared secret.
+
+
 using System;
 using System.Security.Cryptography;
 using System.IO;
@@ -34,21 +37,19 @@ namespace Encryption
         /// </summary>
         public void DeriveSharedKey(byte[] otherPublicKey)
         {
-            // Importa cheia publica (acelasi format EccPublicBlob ca GetPublicKey)
             var otherKey = CngKey.Import(otherPublicKey, CngKeyBlobFormat.EccPublicBlob);
-            // Rezultat: SHA-256(ECDH shared secret) = 32 bytes cheie AES
             _key = _ecdh.DeriveKeyMaterial(otherKey);
         }
 
         
         /// <summary>
-        /// Encypt
+        /// Encrypt
         /// </summary>
         /// <param name="plainText"></param>
         public string Encrypt(string plainText)
         {
             if (_key == null)
-                throw new InvalidOperationException("Apeleaza DeriveSharedKey() inainte de Encrypt.");
+                throw new InvalidOperationException("Calling DerivedSharedKey() before encryption.");
 
             using (var aes = Aes.Create())
             {
@@ -78,7 +79,7 @@ namespace Encryption
         public string Decrypt(string cipherText)
         {
             if (_key == null)
-                throw new InvalidOperationException("Apeleaza DeriveSharedKey() inainte de Decrypt.");
+                throw new InvalidOperationException("Calling DerivedSharedKey() before encryption.");
 
             byte[] combined = Convert.FromBase64String(cipherText);
 
