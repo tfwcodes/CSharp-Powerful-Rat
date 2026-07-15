@@ -1,6 +1,3 @@
-Acesta este un protocol de retea securizat care foloseste encriptie asimetrica cu un key-agreement protocol numit Elliptic-curve Diffie–Hellman (ECDH), care permite la client si server, fiecare avand o pereche de chei publice si private ca sa creeze un shared secret.
-
-
 using System;
 using System.Security.Cryptography;
 using System.IO;
@@ -41,7 +38,7 @@ namespace Encryption
             _key = _ecdh.DeriveKeyMaterial(otherKey);
         }
 
-        
+
         /// <summary>
         /// Encrypt
         /// </summary>
@@ -54,7 +51,7 @@ namespace Encryption
             using (var aes = Aes.Create())
             {
                 aes.Key = _key;
-                aes.GenerateIV(); 
+                aes.GenerateIV();
 
                 using (var ms = new MemoryStream())
                 {
