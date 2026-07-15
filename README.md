@@ -1,5 +1,5 @@
 <h2>C# Powerful Rat </h2>
-<li> This is a powerful Remote-Acces-Trojan made by me in c#. It features a wide variety of different built in commands and a built-in networking protocol.
+<li> This is a powerful Remote-Acces-Trojan made by me in c#. It features a wide variety of different built in commands and a built-in networking protocol that includes a strong ECDH key-agreement protocol.
 
 <h2>E-mail: mihai.ungureanu.talk@gmail.com</h2>
 
