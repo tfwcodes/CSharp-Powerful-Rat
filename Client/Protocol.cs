@@ -41,7 +41,7 @@ namespace Protocol
             stream.ReadAll(buf);
             return buf;
         }
-]
+
         public static void WriteBytes(this Stream stream, byte[] buffer)
         {
             stream.Write(BitConverter.GetBytes(buffer.Length), 0, 4);
