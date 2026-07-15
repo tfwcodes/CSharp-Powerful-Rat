@@ -37,7 +37,8 @@ namespace WindowsService
             tcpClient.Connect("127.0.0.1", 7777);
 
             var stream = tcpClient.GetStream();
-
+            stream.InitializeEncryption(isServer: false);
+            
             new Handle().Handler(stream);
             
             
