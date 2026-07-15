@@ -24,7 +24,8 @@ class Main
 
         var connection = tcpClient.AcceptTcpClient();
         var stream = connection.GetStream();
-
+        stream.InitializeEncryption(isServer: true);
+        
         _handle.HandleClient(stream);
         
     }
