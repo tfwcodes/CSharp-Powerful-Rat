@@ -1,69 +1,103 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System;
 using System.Security.Cryptography;
-using System.Text;
 using System.IO;
-using System.Windows.Forms;
+using System.Text;
 
 namespace Encryption
 {
     public class Encryption
     {
-        private readonly byte[] _key;
+        private byte[] _key;
 
-        public Encryption(string msgToEncrypt)
+        private readonly ECDiffieHellmanCng _ecdh;
+
+        /// <summary>
+        /// Generates a new pair of ECDH keys.
+        /// </summary>
+        public Encryption()
         {
-            var salt = new byte[8];
-            using (var rng = new RNGCryptoServiceProvider())
-            {
-                rng.GetBytes(salt);
-            }
-
-            var pdkdf2 = new Rfc2898DeriveBytes(msgToEncrypt, salt, 1000);
-            _key = pdkdf2.GetBytes(16);
+            _ecdh = new ECDiffieHellmanCng(256);
+            _ecdh.KeyDerivationFunction = ECDiffieHellmanKeyDerivationFunction.Hash;
+            _ecdh.HashAlgorithm = CngAlgorithm.Sha256;
         }
 
+        /// <summary>
+        /// Returns ECDH as bytes.
+        /// </summary>
+        public byte[] GetPublicKey()
+        {
+            return _ecdh.PublicKey.ToByteArray();
+        }
+
+        /// <summary>
+        /// Deriving the shared key from the other public key
+        /// </summary>
+        public void DeriveSharedKey(byte[] otherPublicKey)
+        {
+            // Importa cheia publica (acelasi format EccPublicBlob ca GetPublicKey)
+            var otherKey = CngKey.Import(otherPublicKey, CngKeyBlobFormat.EccPublicBlob);
+            // Rezultat: SHA-256(ECDH shared secret) = 32 bytes cheie AES
+            _key = _ecdh.DeriveKeyMaterial(otherKey);
+        }
+
+        
+        /// <summary>
+        /// Encypt
+        /// </summary>
+        /// <param name="plainText"></param>
         public string Encrypt(string plainText)
         {
-            var aes = Aes.Create();
-            aes.Key = _key;
+            if (_key == null)
+                throw new InvalidOperationException("Apeleaza DeriveSharedKey() inainte de Encrypt.");
 
-            aes.GenerateIV();
+            using (var aes = Aes.Create())
+            {
+                aes.Key = _key;
+                aes.GenerateIV(); 
 
-            var msEncrypt = new MemoryStream();
-            msEncrypt.Write(aes.IV, 0, aes.IV.Length);
+                using (var ms = new MemoryStream())
+                {
+                    ms.Write(aes.IV, 0, aes.IV.Length);
 
-            var encryptor = aes.CreateEncryptor();
-            var csEncrypt = new CryptoStream(msEncrypt, encryptor, CryptoStreamMode.Write);
+                    using (var encryptor = aes.CreateEncryptor())
+                    using (var cs = new CryptoStream(ms, encryptor, CryptoStreamMode.Write))
+                    {
+                        var bytes = Encoding.UTF8.GetBytes(plainText);
+                        cs.Write(bytes, 0, bytes.Length);
+                        cs.FlushFinalBlock();
+                    }
 
-            var bytes = Encoding.UTF8.GetBytes(plainText);
-            csEncrypt.Write(bytes, 0, bytes.Length);
-            csEncrypt.FlushFinalBlock();
-
-            return Convert.ToBase64String(msEncrypt.ToArray());
-
+                    return Convert.ToBase64String(ms.ToArray());
+                }
+            }
         }
 
+        /// <summary>
+        /// Decrrypt a base64 string.
+        /// </summary>
         public string Decrypt(string cipherText)
         {
-            byte[] combineBytes = Convert.FromBase64String(cipherText);
+            if (_key == null)
+                throw new InvalidOperationException("Apeleaza DeriveSharedKey() inainte de Decrypt.");
 
-            var aes = Aes.Create();
-            aes.Key = _key;
+            byte[] combined = Convert.FromBase64String(cipherText);
 
-            byte[] iv = new byte[16];
-            Array.Copy(combineBytes, 0, iv, 0, 16);
-            aes.IV = iv;
+            using (var aes = Aes.Create())
+            {
+                aes.Key = _key;
 
-            var decryptor = aes.CreateDecryptor();
-            var msDecrypt = new MemoryStream(combineBytes, 16, combineBytes.Length - 16);
-            var csDecrypt = new CryptoStream(msDecrypt, decryptor, CryptoStreamMode.Read);
-            var srDecrypt = new StreamReader(csDecrypt);
+                byte[] iv = new byte[16];
+                Array.Copy(combined, 0, iv, 0, 16);
+                aes.IV = iv;
 
-            return srDecrypt.ReadToEnd();
+                using (var decryptor = aes.CreateDecryptor())
+                using (var ms = new MemoryStream(combined, 16, combined.Length - 16))
+                using (var cs = new CryptoStream(ms, decryptor, CryptoStreamMode.Read))
+                using (var sr = new StreamReader(cs))
+                {
+                    return sr.ReadToEnd();
+                }
+            }
         }
     }
 }
