@@ -52,5 +52,6 @@ Built in admin feature. If admin is turned off/on, the response will be automati
 
 8. UserInfo - Get information such as: Machine name, User name, Os version, Processor count, System directory, Domain name, Current working directory, Framework description, Os description
 
-Made entirely by tfwcodes/Mihai Ungureanu
+Made entirely by tfwcodes/Mihai Ungureanu.
+Only use it within machines you have permission/your own.
 '''
